@@ -85,3 +85,41 @@ spec:
           title: Repository
           type: string
           ui:help: Provide the name of your service git repository.
+  steps:
+    - id: template
+      name: Fetch Scaffolded templates
+      action: fetch:template
+      input:
+        url: ./scaffold
+        copyWithoutRender:
+          - .github/workflows/*
+        values:
+          service_name: ${{ parameters.service_name }}
+          description: ${{ parameters.description }}
+          repo: ${{ parameters.repo }}
+          owner: ${{ parameters.owner }}
+          kubernetes_namespace: ${{ parameters.kubernetes_namespace }}
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts:
+          - github.com
+        description: This is ${{ parameters.service_name }}
+        repoUrl: github.com?repo=${{ parameters.repo }}&owner=rokt
+
+    # - id: register
+    #   name: Register
+    #   action: catalog:register
+    #   input:
+    #     repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+    #     catalogInfoPath: "/catalog-info.yaml"
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      # - title: Open in catalog
+      #   icon: catalog
+      #   entityRef: ${{ steps.register.output.entityRef }}
