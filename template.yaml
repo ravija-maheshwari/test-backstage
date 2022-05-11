@@ -1,0 +1,87 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: create-new-service
+  title: Create basic template
+  description: Create a new service with Backstage software templates
+spec:
+  owner: sre # Owner of this template
+  type: service # This template is used to create a new service
+  parameters:
+    # Capture service general information
+    - title: Service Information
+      required:
+        - service_name
+        - description
+        - owner
+      properties:
+        service_name:
+          title: Name
+          type: string
+          description: Name of the service
+          ui:field: EntityNamePicker # Custom field comes with Backstage software templates feature
+        description:
+          title: Description
+          type: string
+          ui:help: Help others understand what this service is for.
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the service
+          ui:field: OwnerPicker # Custom field comes with Backstage software templates feature
+          ui:options:
+            allowedKinds:
+              - Group
+
+    # Capture service deployment information
+    - title: Service deployment information
+      required:
+        - realm
+        - deployment_region
+        - kubernetes_namespace
+      type: object
+      properties:
+        realm:
+          title: Realm
+          type: array
+          default: rokt
+          ui:help: Select which Realms the service should be deployed to.
+          ui:widget: checkboxes
+          uniqueItems: true
+          items:
+            type: string
+            enum:
+              - rokt
+              - eng
+              - calendar
+              - kafka
+              - kubeflow
+              - sandbox
+        deployment_region:
+          title: Regions
+          type: array
+          default: us-west-2
+          ui:help: Select one or more regions to deploy your service in
+          ui:widget: checkboxes
+          uniqueItems: true
+          items:
+            type: string
+            enum:
+              - us-west-2
+              - us-east-1
+              - ap-southeast-2
+              - eu-west-1
+        kubernetes_namespace:
+          title: Kubernetes Namespace
+          type: string
+          ui:help: Which Kubernetes namespace should the service be deployed to.
+
+    # Capture service repository information
+    - title: Service Repository
+      required:
+        - repo
+      properties:
+        repo:
+          title: Repository
+          type: string
+          ui:help: Provide the name of your service git repository.
